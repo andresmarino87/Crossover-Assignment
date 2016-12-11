@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_credit_card_info"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.crossover_assignment.activities.CreditCardInfoActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/credit_card_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_credit_card_number"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:maxLength="@integer/credit_card_length"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/credit_card_owner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_name"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/expiration_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_expiration_date"
+                    android:inputType="date"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/security_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/prompt_security_code"
+                    android:imeActionId="@+id/rent"
+                    android:imeActionLabel="@string/action_rent"
+                    android:imeOptions="actionUnspecified"
+                    android:inputType="number"
+                    android:maxLength="@integer/security_code_length"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </android.support.design.widget.TextInputLayout>
+            <Button
+                android:id="@+id/rent_bicycle"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_rent"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

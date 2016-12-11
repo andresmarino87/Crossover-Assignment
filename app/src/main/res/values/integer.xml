@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="credit_card_length">16</integer>
+    <integer name="expiration_date_length">3</integer>
+    <integer name="security_code_length">3</integer>
+</resources>
