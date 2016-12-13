@@ -68,7 +68,6 @@ public class BackendConnector implements ServerConection {
         arg.put(AppConstants.ARG_EXPIRATION, expirationDate);
         arg.put(AppConstants.ARG_CODE, securityCode);
         JSONObject result = HTTPConnection.excutePost(AppConstants.URL_BASE_API+AppConstants.URL_RENT, arg, token);
-        Log.i("test 2", result.toString());
         return result;
     }
 }

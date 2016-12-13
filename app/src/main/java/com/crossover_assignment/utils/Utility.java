@@ -25,7 +25,9 @@ import java.net.URL;
  * Created by kate on 12/10/16.
  */
 
-public class Utility {
+public final class Utility {
+
+    private Utility(){}
 
     public static JSONObject buildJsonFromStream(InputStream is) throws IOException, JSONException {
         String line,jsonText;

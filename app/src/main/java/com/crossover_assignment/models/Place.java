@@ -40,10 +40,6 @@ public class Place implements Parcelable {
         this.name = name;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
     @Override
     public int describeContents() {
         return 0;

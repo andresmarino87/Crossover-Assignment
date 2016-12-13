@@ -11,8 +11,8 @@ import java.util.ArrayList;
  */
 
 public interface ServerConection {
-    public JSONObject signUp(final String email, final String pass) throws Exception;
-    public JSONObject signIn(final String email, final String pass) throws Exception;
-    public ArrayList<Place> getPlaces(final String token) throws Exception;
-    public JSONObject rentBike(final String creditCardNumber, final String name, final String expirationDate, final String securityCode, final String token) throws Exception;
+    JSONObject signUp(final String email, final String pass) throws Exception;
+    JSONObject signIn(final String email, final String pass) throws Exception;
+    ArrayList<Place> getPlaces(final String token) throws Exception;
+    JSONObject rentBike(final String creditCardNumber, final String name, final String expirationDate, final String securityCode, final String token) throws Exception;
 }

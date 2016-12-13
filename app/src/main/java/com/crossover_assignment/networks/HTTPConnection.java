@@ -18,7 +18,8 @@ import java.net.URL;
  * Created by kate on 12/10/16.
  */
 
-public class HTTPConnection {
+public final class HTTPConnection {
+    private HTTPConnection(){}
 
     public static JSONObject excutePost(String targetURL, JSONObject jsonParam) {
         return excutePost(targetURL, jsonParam, null);

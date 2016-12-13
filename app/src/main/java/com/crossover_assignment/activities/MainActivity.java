@@ -20,7 +20,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 places = (new BackendConnector()).getPlaces(token);
             } catch (Exception e) {
-                places = new ArrayList<Place>();
+                places = new ArrayList<>();
             }
             return places;
         }
