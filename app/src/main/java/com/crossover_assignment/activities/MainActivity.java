@@ -5,13 +5,9 @@ import android.accounts.AccountManager;
 import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.OperationCanceledException;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -25,15 +21,17 @@ import android.widget.TextView;
 
 import com.crossover_assignment.R;
 import com.crossover_assignment.config.AppConstants;
+import com.crossover_assignment.interfaces.ServerConnection;
 import com.crossover_assignment.models.Place;
 import com.crossover_assignment.networks.BackendConnector;
 import com.crossover_assignment.utils.Utility;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private Context context;
-    private ArrayList<Place> places;
+    private List<Place> places;
     private GetPlacesTask placesTask = null;
 
     private AccountManager am;
@@ -108,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                     fab.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            showProgress(true);
+                            Utility.showProgress(true, message_text, loading_progress, context);
                             placesTask = new GetPlacesTask(authToken);
                             placesTask.execute((Void) null);
                         }
@@ -125,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class GetPlacesTask extends AsyncTask<Void, Void, ArrayList<Place> > {
+    public class GetPlacesTask extends AsyncTask<Void, Void, List<Place> > {
         private String token;
 
         GetPlacesTask(String authToken) {
@@ -133,9 +131,10 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Place> doInBackground(Void... params) {
+        protected List<Place> doInBackground(Void... params) {
+            ServerConnection con = new BackendConnector();
             try {
-                places = (new BackendConnector()).getPlaces(token);
+                places = con.getPlaces(token);
             } catch (Exception e) {
                 places = new ArrayList<>();
             }
@@ -143,50 +142,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(final ArrayList<Place> places) {
-            showProgress(false);
+        protected void onPostExecute(final List<Place> places) {
+            Utility.showProgress(false, message_text, loading_progress, context);
             Intent intent = new Intent(context, MapsActivity.class);
-            intent.putParcelableArrayListExtra("places",places);
+            intent.putParcelableArrayListExtra("places",(ArrayList) places);
             intent.putExtra("authToken",authToken);
             context.startActivity(intent);
         }
 
         @Override
         protected void onCancelled() {
-            showProgress(false);
-        }
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            message_text.setVisibility(show ? View.GONE : View.VISIBLE);
-            message_text.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    message_text.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            loading_progress.setVisibility(show ? View.VISIBLE : View.GONE);
-            loading_progress.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    loading_progress.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            loading_progress.setVisibility(show ? View.VISIBLE : View.GONE);
-            message_text.setVisibility(show ? View.GONE : View.VISIBLE);
+            placesTask = null;
+            Utility.showProgress(false, message_text, loading_progress, context);
         }
     }
 }

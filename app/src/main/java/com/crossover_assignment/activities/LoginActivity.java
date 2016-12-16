@@ -3,15 +3,8 @@ package com.crossover_assignment.activities;
 import android.accounts.Account;
 import android.accounts.AccountAuthenticatorActivity;
 import android.accounts.AccountManager;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
 import android.content.CursorLoader;
@@ -20,11 +13,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -37,15 +28,15 @@ import android.widget.TextView;
 
 import com.crossover_assignment.R;
 import com.crossover_assignment.config.AppConstants;
+import com.crossover_assignment.interfaces.ServerConnection;
 import com.crossover_assignment.networks.BackendConnector;
+import com.crossover_assignment.utils.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
@@ -146,7 +137,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         } else {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
-            showProgress(true);
+            Utility.showProgress(true, mLoginFormView, mProgressView, context);
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
@@ -158,42 +149,6 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
 
     private boolean isPasswordValid(String password) {
         return password.length() > 4;
-    }
-
-    /**
-     * Shows the progress UI and hides the login form.
-     */
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
-    private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
-
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-                }
-            });
-
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
     }
 
     @Override
@@ -267,8 +222,9 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         @Override
         protected JSONObject doInBackground(Void... params) {
             JSONObject result;
+            ServerConnection con = new BackendConnector();
             try {
-                result = (new BackendConnector()).signUp(email, pass);
+                result = con.signUp(email, pass);
             } catch (Exception e) {
                 result = new JSONObject();
                 try {
@@ -283,7 +239,7 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         @Override
         protected void onPostExecute(final JSONObject result) {
             mAuthTask = null;
-            showProgress(false);
+            Utility.showProgress(false, mLoginFormView, mProgressView, context);
             try {
                 if (result != null && result.getString(AppConstants.ARG_RESULT).equals(AppConstants.ARG_OK)) {
                     final Intent intent = new Intent();
@@ -304,19 +260,14 @@ public class LoginActivity extends AccountAuthenticatorActivity implements Loade
         @Override
         protected void onCancelled() {
             mAuthTask = null;
-            showProgress(false);
+            Utility.showProgress(false, mLoginFormView, mProgressView, context);
         }
 
         private void finishLogin(Intent intent) {
             final String accountName = intent.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             final String accountPassword = intent.getStringExtra(AppConstants.ARG_PASSWORD);
-            Log.i("Helpppp result","accountName "+accountName);
-            Log.i("Helpppp result","accountPassword "+accountPassword);
-
-
             final Account account = new Account(accountName, intent.getStringExtra(AccountManager.KEY_ACCOUNT_TYPE));
             String authToken = intent.getStringExtra(AccountManager.KEY_AUTHTOKEN);
-            Log.i("Helpppp result","FINISHLOGIN");
 
             if (getIntent().getBooleanExtra(AppConstants.ARG_IS_ADDING_NEW_ACCOUNT, false)) {
                 // Creating the account on the device and setting the auth token we got

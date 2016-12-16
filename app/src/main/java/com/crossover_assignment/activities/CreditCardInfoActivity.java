@@ -10,15 +10,18 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.crossover_assignment.R;
 import com.crossover_assignment.config.AppConstants;
+import com.crossover_assignment.interfaces.ServerConnection;
 import com.crossover_assignment.networks.BackendConnector;
+import com.crossover_assignment.utils.Utility;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -27,7 +30,8 @@ public class CreditCardInfoActivity extends AppCompatActivity {
     private Context context;
     private PostPaymentTask paymentTask;
     private String authToken;
-
+    private ProgressBar loading_progress;
+    private ScrollView form_content;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -36,6 +40,8 @@ public class CreditCardInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_credit_card_info);
         context= this;
         authToken = getIntent().getStringExtra("authToken");
+        loading_progress = (ProgressBar) findViewById(R.id.loading_progress);
+        form_content = (ScrollView) findViewById(R.id.form_content);
 
         final EditText et_credit_card_number = (EditText) findViewById (R.id.credit_card_number);
         final EditText et_credit_card_owner = (EditText) findViewById (R.id.credit_card_owner);
@@ -114,7 +120,7 @@ public class CreditCardInfoActivity extends AppCompatActivity {
                 String expiration_date = et_expiration_date.getText().toString();
                 String security_code = et_security_code.getText().toString();
 
-                if (TextUtils.isEmpty(credit_card_number) || credit_card_number.length() < 16) {
+                if (TextUtils.isEmpty(credit_card_number) || credit_card_number.length() < getResources().getInteger(R.integer.credit_card_length)) {
                     et_credit_card_number.setError(getString(R.string.error_field_required_16));
                     focusView = et_credit_card_number;
                     go = go && false;
@@ -126,19 +132,20 @@ public class CreditCardInfoActivity extends AppCompatActivity {
                     go = go && false;
                 }
 
-                if (TextUtils.isEmpty(expiration_date) || expiration_date.length() < 5) {
+                if (TextUtils.isEmpty(expiration_date) || expiration_date.length() < getResources().getInteger(R.integer.expiration_date_length)) {
                     et_expiration_date.setError(getString(R.string.error_field_required));
                     focusView = et_expiration_date;
                     go = go && false;
                 }
 
-                if (TextUtils.isEmpty(security_code) || security_code.length() < 3) {
+                if (TextUtils.isEmpty(security_code) || security_code.length() < getResources().getInteger(R.integer.security_code_length)) {
                     et_security_code.setError(getString(R.string.error_field_required_3));
                     focusView = et_security_code;
                     go = go && false;
                 }
 
                 if(go){
+                    Utility.showProgress(true, form_content, loading_progress, context);
                     paymentTask = new PostPaymentTask(credit_card_number, credit_card_owner,expiration_date,security_code, authToken);
                     paymentTask.execute((Void) null);
                 }else {
@@ -170,13 +177,14 @@ public class CreditCardInfoActivity extends AppCompatActivity {
         @Override
         protected JSONObject doInBackground(Void... params) {
             JSONObject result;
+            ServerConnection con = new BackendConnector();
+
             try {
-                result = (new BackendConnector()).rentBike(credit_card_number,
+                result = con.rentBike(credit_card_number,
                         credit_card_owner,
                         expiration_date,
                         security_code,
                         token);
-                Log.i("test",result.toString());
             } catch (Exception e) {
                 result = new JSONObject();
                 e.printStackTrace();
@@ -191,6 +199,7 @@ public class CreditCardInfoActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final JSONObject result) {
+            Utility.showProgress(false, form_content, loading_progress, context);
             try {
                 if (result.getString(AppConstants.ARG_RESULT).equals(AppConstants.ARG_OK)) {
                     Toast.makeText(context, getString(R.string.prompt_successful)+" "+result.getString("message"),Toast.LENGTH_SHORT).show();
@@ -207,8 +216,8 @@ public class CreditCardInfoActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
-            //              mAuthTask = null;
-//                showProgress(false);
+            paymentTask = null;
+            Utility.showProgress(false, form_content, loading_progress, context);
         }
     }
 }

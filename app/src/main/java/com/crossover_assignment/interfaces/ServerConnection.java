@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * Created by kate on 12/10/16.
  */
 
-public interface ServerConection {
+public interface ServerConnection {
     JSONObject signUp(final String email, final String pass) throws Exception;
     JSONObject signIn(final String email, final String pass) throws Exception;
     ArrayList<Place> getPlaces(final String token) throws Exception;

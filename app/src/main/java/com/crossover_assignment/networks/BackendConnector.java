@@ -1,9 +1,7 @@
 package com.crossover_assignment.networks;
 
-import android.util.Log;
-
 import com.crossover_assignment.config.AppConstants;
-import com.crossover_assignment.interfaces.ServerConection;
+import com.crossover_assignment.interfaces.ServerConnection;
 import com.crossover_assignment.models.Location;
 import com.crossover_assignment.models.Place;
 
@@ -15,7 +13,7 @@ import java.util.ArrayList;
  * Created by kate on 12/10/16.
  */
 
-public class BackendConnector implements ServerConection {
+public class BackendConnector implements ServerConnection {
 
     public BackendConnector() {
     }
